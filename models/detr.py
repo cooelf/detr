@@ -63,13 +63,13 @@ class DETR(nn.Module):
         src, mask = features[-1].decompose()
         assert mask is not None
         hs = self.transformer(self.input_proj(src), mask, self.query_embed.weight, pos[-1])[0]
-        return hs
+
         outputs_class = self.class_embed(hs)
         outputs_coord = self.bbox_embed(hs).sigmoid()
         out = {'pred_logits': outputs_class[-1], 'pred_boxes': outputs_coord[-1]}
         if self.aux_loss:
             out['aux_outputs'] = self._set_aux_loss(outputs_class, outputs_coord)
-        return out
+        return hs, out
 
     @torch.jit.unused
     def _set_aux_loss(self, outputs_class, outputs_coord):
